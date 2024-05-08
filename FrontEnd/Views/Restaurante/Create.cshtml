@@ -1,0 +1,139 @@
+﻿@model FrontEnd.Models.RestauranteViewModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<div class="row justify-content-center">
+
+    <div class="col-xl-10 col-lg-12 col-md-9">
+
+        <div class="card o-hidden border-0 shadow-lg my-5">
+            <div class="card-body p-0">
+                <!-- Nested Row within Card Body -->
+                <div class="row">
+                    <div class="col-lg-6 d-none d-lg-block bg-login-image">
+                        
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="p-5">
+                            <div class="text-center">
+                                <h1 class="h4 text-gray-900 mb-4">Restaurante Nuevo!</h1>
+                            </div>
+                            <form class="user" asp-action="Create">
+                                
+                                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                <div class="form-group">                                    
+                                    <input asp-for="Nombre" type="text" class="form-control form-control-user"
+                                           id="exampleInputEmail" 
+                                           placeholder="Nombre del restaurante" />
+                                    <span asp-validation-for="Nombre" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <input asp-for="Direccion" type="text" class="form-control form-control-user"
+                                           id="exampleInputEmail" 
+                                           placeholder="Direccion del restaurante" />
+                                    <span asp-validation-for="Direccion" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label for="calificacion">Calificación del restaurante:</label>
+                                    <div style="display: flex; align-items: center;">
+                                        <input asp-for="Calificacion" type="range" class="form-range" min="1" max="10" id="calificacion" value="10">
+                                        <output id="calificacionOutput" class="valor-output">10</output>
+                                    </div>
+                                    <span asp-validation-for="Calificacion" class="text-danger"></span>
+                                </div>
+
+                                <style>
+                                    .valor-output {
+                                        margin-left: 10px; /* Ajusta el margen según sea necesario */
+                                        padding: 5px;
+                                        background-color: #007bff;
+                                        color: #fff;
+                                        border-radius: 5px;
+                                    }
+                                </style>
+                                
+                                <script>
+                               
+
+                                    var calificacionInput = document.getElementById('calificacion');
+                                    var calificacionOutput = document.getElementById('calificacionOutput');
+
+                                    // Establecer el valor inicial del output al valor predeterminado del input
+                                    calificacionOutput.textContent = calificacionInput.value;
+
+                                    calificacionInput.addEventListener('input', function () {
+                                        calificacionOutput.textContent = calificacionInput.value;
+                                    });
+
+                                    // SweetAlert
+                                    
+                                </script>
+
+
+
+                                <button type="submit" class="btn btn-primary btn-user btn-block">Crear</button>
+
+
+                                <hr>
+                                <a href="@Url.Action("Index","Home")" class="btn btn-google btn-user btn-block">
+                                    Regresar
+                                </a>
+                                
+                            </form>
+                            
+
+                            
+
+                            <br/>
+                            <br/>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+<script>
+    //alert("hola")
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // Usando Newtonsoft.Json.JsonConvert para serializar el valor de ViewBag.CreacionExitosa
+        var creacionExitosa = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.CreacionExitosa));
+       // alert(creacionExitosa);
+
+        if (creacionExitosa !== null && creacionExitosa !== undefined) {
+            if (creacionExitosa) {
+                mostrarAlerta('success', '¡Se creo con exito el restaurante!');
+            } else {
+                mostrarAlerta('error', '¡Hubo un error al crear el restaurante!');
+            }
+        }
+
+        function mostrarAlerta(tipo, mensaje) {
+            Swal.fire({
+                icon: tipo,
+                title: tipo === 'success' ? '¡Éxito!' : '¡Error!',
+                text: mensaje,
+                confirmButtonColor: '#4E73DF',
+                confirmButtonText: 'Aceptar'
+            }).then((result) => {
+                // Si el usuario hace clic en "Ok", redirige a la página inicial
+                if (result.isConfirmed && creacionExitosa) {
+                    window.location.href = '@Url.Action("Index", "Home")'; // Coloca la URL de la página inicial
+                }
+            });
+        }
+    });
+
+
+</script>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

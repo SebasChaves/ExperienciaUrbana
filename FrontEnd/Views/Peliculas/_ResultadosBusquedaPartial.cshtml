@@ -1,0 +1,40 @@
+﻿@model List<FrontEnd.Models.PeliculasSeriesDBViewModel>
+@{
+    int contador = 0;
+}
+@foreach (var peliculasSeries in Model)
+{
+    <div class="col-md-3 mb-4">
+        <div class="card" data-toggle="modal" data-target="#modalDetalle_@peliculasSeries.PeliculaSerieId" onclick="loadModal('@peliculasSeries.PeliculaSerieId', '@peliculasSeries.Nombre', '@peliculasSeries.Tipo')">
+            <img src="@peliculasSeries.Imagen" class="card-img-top" alt="Imagen del Producto">
+            <div class="card-body">
+                <h5 class="card-title" style="font-weight: bold; color: black">@peliculasSeries.Nombre</h5>
+                <small class="card-text">@peliculasSeries.FechaEstreno</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script dentro del bucle -->
+    <script>
+        function loadModal(id, nombre, tipo) {
+            //alert('ID'+id)
+            $.ajax({
+                url: '/Peliculas/GetModal',
+                type: 'GET',
+                data: { id: id, nombre: nombre, tipo: tipo },
+                success: function (result) {
+                    $('#modalContainer').html(result);
+                    $('#modalDetalle').modal('show');
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+        }
+    </script>
+
+    contador++;
+}
+
+<!-- Lugar donde se encuentra fuera del bucle -->
+<div id="modalContainer"></div>

@@ -1,0 +1,104 @@
+﻿@model List<FrontEnd.Models.PeliculasSeriesDBViewModel>
+@{int contador= 0;}
+<div class="container mt-4">
+    <div class="row" id="searchResults">
+        @foreach (var peliculasSeries in Model)
+        {
+            
+            <div class="col-md-3 mb-4">
+                <div class="card" data-toggle="modal" data-target="#modalDetalle_@peliculasSeries.PeliculaSerieId" onclick="loadModal('@peliculasSeries.PeliculaSerieId', '@peliculasSeries.Nombre', '@peliculasSeries.Tipo','true')">
+                    <img src="https://image.tmdb.org/t/p/w500//////@peliculasSeries.Imagen" class="card-img-top" alt="Imagen del Producto">
+                    <div class="card-body">
+                        <h5 class="card-title" style="font-weight: bold; color: black">@peliculasSeries.Nombre</h5>
+                        <small class="card-text">@peliculasSeries.FechaEstreno</small>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Script dentro del bucle -->
+            <script>
+                function loadModal(id, nombre, tipo, isBaseDatos) {
+                    //alert('ID'+id)
+                    $.ajax({
+                        url: '/Peliculas/GetModal',
+                        type: 'GET',
+                        data: { id: id, nombre: nombre, tipo: tipo, isBaseDatos: isBaseDatos },
+                        success: function (result) {
+                            $('#modalContainer').html(result);
+                            $('#modalDetalle').modal('show');
+                        },
+                        error: function (error) {
+                            console.log(error);
+                        }
+                    });
+                }
+            </script>
+        }
+        <!-- Lugar donde se encuentra fuera del bucle -->
+        <div id="modalContainer"></div>
+    </div>
+    <div class="fixed-bottom d-flex justify-content-end mb-3 mr-3">
+        <button id="toggleSearchBtn" class="btn btn-primary">Buscar</button>
+        <div id="searchContainer" class="ml-2" style="display: none;">
+            <input type="text" class="form-control" id="searchInput" placeholder="Buscar...">
+            <div id="searchResults"></div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-eEJ72OFnrZzijl7n2QkSlaWS1xZxU2w1bYT5PaFQ1JYefzI0u7km8x1k1NpbhPwj" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha384-eT4xvUkS5bA+vnl3Tl+JhFez+6LoDqHL+l6yQuZu2P/zjXC6ZUxFZcMr2u8jV2Jp" crossorigin="anonymous"></script>
+<script>
+    $(document).ready(function () {
+        $('#toggleSearchBtn').click(function () {
+            $('#searchContainer').toggle();
+        });
+
+        $('#searchInput').keyup(function () {
+            var searchTerm = $(this).val();
+
+            $.ajax({
+                url: '/Peliculas/Buscar', // Ajusta la ruta de tu controlador
+                type: 'GET',
+                data: { searchTerm: searchTerm },
+                success: function (data) {
+                    $('#searchResults').html(data);
+                },
+                error: function () {
+                    console.error('Error en la solicitud AJAX.');
+                }
+            });
+        });
+    });
+
+</script>
+<script>
+    var EliminacionExitosa = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.EliminacionExitosa));
+    var Tipo = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.TipoPeliculaSerie));
+    //alert('AS'+Tipo);
+    if (EliminacionExitosa !== null && EliminacionExitosa !== undefined) {
+        if (EliminacionExitosa) {
+            if (Tipo == 'movie') {
+                mostrarAlertaEliminado('success', '¡Se eliminó con éxito la pelicula!');
+            } else if(Tipo == 'tv') { 
+                mostrarAlertaEliminado('success', '¡Se eliminó con éxito la serie!');
+            } else { 
+                mostrarAlertaEliminado('success', '¡Se eliminó con éxito');
+            }
+           
+        } else {
+            mostrarAlertaEliminado('error', '¡Hubo un error al intentar eliminar!');
+        }
+    }
+
+    function mostrarAlertaEliminado(tipo, mensaje) {
+        Swal.fire({
+            icon: tipo,
+            title: tipo === 'success' ? '¡Éxito!' : '¡Error!',
+            text: mensaje,
+            confirmButtonColor: '#4E73DF',
+            confirmButtonText: 'Aceptar'
+        });
+        }
+</script>

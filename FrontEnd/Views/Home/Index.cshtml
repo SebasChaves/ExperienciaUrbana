@@ -1,0 +1,284 @@
+﻿@model IndexViewModel
+@{
+    ViewData["Title"] = "Home Page";
+    bool flag = true;
+    int contador = 0;
+}
+
+<div class="row">
+    @foreach (var item in Model.Restaurante)
+    {
+        /*
+        AGREGAR AJAX CUANDO SE CAMBIE EL ESTADO
+        */
+        if (flag)
+        {
+            <!-- Earnings (Monthly) Card Example -->
+
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-primary shadow h-100 py-2">
+                    <a href="@Url.Action("Edit","Restaurante",new {id = item.RestauranteId})" style="text-decoration: none">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                        @Html.DisplayFor(modelItem => item.Nombre)
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                        @Html.DisplayFor(modelItem => item.Calificacion)
+                                    </div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-comments fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            flag = false;
+        }
+        else
+        {
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-warning shadow h-100 py-2">
+                    <a href="@Url.Action("Edit","Restaurante",new {id = item.RestauranteId})" style="text-decoration: none">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                        @Html.DisplayFor(modelItem => item.Nombre)
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                        @Html.DisplayFor(modelItem => item.Calificacion)
+                                    </div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-comments fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+
+                        </div>
+                    </a>
+                </div>
+            </div>
+            flag = true;
+        }
+    }
+</div>
+
+<div class="container-fluid">
+
+    <!-- Page Heading -->
+    <h1 class="h3 mb-2 text-gray-800">Tables</h1>
+    <p class="mb-4">
+        DataTables is a third party plugin that is used to generate the demo table below.
+        For more information about DataTables, please visit the <a target="_blank"
+                                                                   href="https://datatables.net">official DataTables documentation</a>.
+    </p>
+
+    <!-- DataTales Example -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">DataTables Example</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Nombre de la actividad</th>
+                            <th>Comentarios</th>
+                            <th>Estado</th>
+
+                        </tr>
+                    </thead>
+                    <tfoot>
+                        <tr>
+                            <th>Name</th>
+                            <th>Comentarios</th>
+                            <th>Estado</th>
+
+                        </tr>
+                    </tfoot>
+                    <tbody>
+                        <tr>
+                            <td>Tiger Nixon</td>
+                            <td>System Architect</td>
+                            <td>System Architect</td>
+
+                        </tr>
+                        <tr>
+                            <td>Garrett Winters</td>
+                            <td>Accountant</td>
+                            <td>Accountant</td>
+
+                        </tr>
+                        <tr>
+                            <td>Ashton Cox</td>
+                            <td>Junior Technical Author</td>
+                            <td>Junior Technical Author</td>
+
+                        </tr>
+                        <tr>
+                            <td>Cedric Kelly</td>
+                            <td>Senior Javascript Developer</td>
+                            <td>Senior Javascript Developer</td>
+
+                        </tr>
+                        <tr>
+                            <td>Airi Satou</td>
+                            <td>Accountant</td>
+                            <td>Accountant</td>
+
+                        </tr>
+
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+<div class="row">
+    @foreach (var actividades in Model.ActividadesPorHacer)
+    {
+        contador++;
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card shadow mb-4" id="isHover_@contador">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">@actividades.Nombre</h6>
+                    Fecha a realizar: <h6 class="m-0 font-weight-bold text-warning">@Html.DisplayFor(model => actividades.Fecha)</h6>
+                </div>
+                @if (actividades.Realizada.HasValue && !actividades.Realizada.Value)
+                {
+                    <select id="estadoTarea_@contador" class="form-control form-control-sm btn btn-danger btn-sm">
+                        <option value="por-realizar" selected>Por realizar</option>
+                        <option value="realizado">Realizado</option>
+                    </select>
+                }
+                else
+                {
+                    <select id="estadoTarea_@contador" class="form-control form-control-sm btn btn-success btn-sm">
+                        <option value="por-realizar" >Por realizar</option>
+                        <option value="realizado"selected>Realizado</option>
+                    </select>
+                }
+                <i id="basureroIcon_@contador" class="fas fa-trash" style="display: none; cursor: pointer; position: absolute; top: 10px; right: 10px;"></i>
+               
+            </div>
+        </div>
+
+        <script>
+            $(document).ready(function () {
+                $('#isHover_@contador').hover(
+                    function () {
+                        $('#basureroIcon_@contador').show();
+                    },
+                    function () {
+                        $('#basureroIcon_@contador').hide();
+                    }
+                );
+            });
+        </script>
+        <script>
+            $(document).ready(function () {
+                $('#basureroIcon_@contador').click(function () {
+                    Swal.fire({
+                        title: '¿Estás seguro?',
+                        text: '¡Esto eliminará la tarea!',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#3085d6',
+                        confirmButtonText: 'Sí, eliminar'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Supongamos que tuIdDeTarea es el ID correcto de la tarea
+                            var tuIdDeTarea = @actividades.ActividadId; // Reemplaza con tu lógica para obtener el ID correcto
+
+                            // Realizar la solicitud AJAX
+                            $.ajax({
+                                url: '@Url.Action("Delete", "ActividadesPorHacer")', // Ajusta la ruta según tu configuración
+                                type: 'POST',
+                                data: { id: tuIdDeTarea }, // Ajusta el parámetro según tu implementación
+                                success: function (response) {
+                                    if (response.success) {
+                                        Swal.fire('Eliminado', response.message, 'success').then(function () {
+                                            // Recargar la página después de cerrar el SweetAlert
+                                            location.reload(true);
+                                        });
+                                    } else {
+                                        Swal.fire('Error', 'Hubo un problema al intentar eliminar la tarea.', 'error');
+                                    }
+                                },
+                                error: function () {
+                                    Swal.fire('Error', 'Hubo un problema al intentar comunicarse con el servidor.', 'error');
+                                }
+                            });
+                        }
+                    });
+                });
+            });
+        </script>
+        <script>
+            // Agrega este script para cambiar dinámicamente la clase del select
+            document.getElementById('estadoTarea_@contador').addEventListener('change', function () {
+                var select = this;
+                var selectedOption = select.options[select.selectedIndex];
+
+                if (selectedOption.value === 'por-realizar') {
+                    select.className = 'form-control form-control-sm btn btn-danger btn-sm';
+
+                    // Supongamos que tuIdDeTarea es el ID correcto de la tarea
+                    var tuIdDeTarea = @actividades.ActividadId; // Reemplaza con tu lógica para obtener el ID correcto
+
+                    // Realizar la solicitud AJAX
+                    $.ajax({
+                        url: '@Url.Action("Edit", "ActividadesPorHacer")', // Ajusta la ruta según tu configuración
+                        type: 'POST',
+                        data: { id: tuIdDeTarea, realizado: false }, // Ajusta el parámetro según tu implementación
+                        success: function (response) {
+                            console.log("Se realizo con exito");
+                        },
+                        error: function () {
+                            Swal.fire('Error', 'Hubo un problema al intentar comunicarse con el servidor.', 'error');
+                        }
+                    });
+                } else if (selectedOption.value === 'realizado') {
+                    select.className = 'form-control form-control-sm btn btn-success btn-sm';
+
+                    // Supongamos que tuIdDeTarea es el ID correcto de la tarea
+                    var tuIdDeTarea = @actividades.ActividadId; // Reemplaza con tu lógica para obtener el ID correcto
+
+                    // Realizar la solicitud AJAX
+                    $.ajax({
+                        url: '@Url.Action("Edit", "ActividadesPorHacer")', // Ajusta la ruta según tu configuración
+                        type: 'POST',
+                        data: { id: tuIdDeTarea, realizado: true }, // Ajusta el parámetro según tu implementación
+                        success: function (response) {
+                            console.log("Se realizo con exito");
+                        },
+                        error: function () {
+                            Swal.fire('Error', 'Hubo un problema al intentar comunicarse con el servidor.', 'error');
+                        }
+                    });
+                }
+            });
+        </script>
+        <script>
+            //EDIT para cuando se cambia de "Por realizar" a "Realizado"
+        </script>
+    }
+
+</div>
+
+
+
+
+
+
+
